@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidade — PageTurn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg0: #0D0D0D; --bg1: #141414; --bg2: #1C1C1E; --bg3: #252527;
+      --accent: #E8423A; --text: #F2F2F2; --text2: #9A9A9A; --text3: #555558;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg0); color: var(--text); font-family: 'DM Sans', sans-serif; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px); background: rgba(13,13,13,0.8);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { font-size: 13px; color: var(--text2); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+
+    .container {
+      max-width: 720px; margin: 0 auto;
+      padding: 140px 40px 100px;
+    }
+
+    .page-tag {
+      display: inline-block; font-size: 11px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900; line-height: 1.1; letter-spacing: -1px; margin-bottom: 12px;
+    }
+
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .last-updated {
+      font-size: 13px; color: var(--text3); margin-bottom: 60px;
+      padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .toc {
+      background: var(--bg1); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 60px;
+    }
+
+    .toc-title {
+      font-size: 12px; font-weight: 500; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 16px;
+    }
+
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 10px; }
+    .toc a { font-size: 14px; color: var(--text2); text-decoration: none; transition: color 0.2s; }
+    .toc a:hover { color: var(--accent); }
+
+    .section { margin-bottom: 56px; scroll-margin-top: 100px; }
+
+    h2 {
+      font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700;
+      margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 12px;
+    }
+
+    h2 .num {
+      width: 32px; height: 32px; background: rgba(232,66,58,0.1);
+      border: 1px solid rgba(232,66,58,0.2); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: var(--accent); flex-shrink: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    p { font-size: 15px; color: var(--text2); line-height: 1.8; font-weight: 300; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+
+    .highlight {
+      background: var(--bg1); border-left: 3px solid var(--accent);
+      border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 20px 0;
+    }
+
+    .highlight p { color: var(--text); font-weight: 400; margin: 0; }
+
+    strong { color: var(--text); font-weight: 500; }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.04); padding: 32px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--text); text-decoration: none; }
+    .footer-logo span { color: var(--accent); }
+    .footer-copy { font-size: 12px; color: var(--text3); }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .container { padding: 100px 20px 80px; }
+      footer { padding: 24px 20px; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Page<span>Turn</span></a>
+    <a href="/" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Voltar ao site
+    </a>
+  </nav>
+
+  <div class="container">
+    <div class="page-tag">Legal</div>
+    <h1>Política de <em>Privacidade</em></h1>
+    <div class="last-updated">Última atualização: março de 2026</div>
+
+    <div class="toc">
+      <div class="toc-title">Índice</div>
+      <ol>
+        <li><a href="#s1">Informações que coletamos</a></li>
+        <li><a href="#s2">Armazenamento de dados</a></li>
+        <li><a href="#s3">Arquivos do usuário</a></li>
+        <li><a href="#s4">Permissões utilizadas</a></li>
+        <li><a href="#s5">Serviços de terceiros</a></li>
+        <li><a href="#s6">Segurança</a></li>
+        <li><a href="#s7">Crianças</a></li>
+        <li><a href="#s8">Contato</a></li>
+        <li><a href="#s9">Alterações nesta política</a></li>
+      </ol>
+    </div>
+
+    <div class="highlight">
+      <p>🔒 <strong>Resumo simples:</strong> O PageTurn não coleta, armazena nem transmite nenhum dado pessoal. Tudo fica no seu celular.</p>
+    </div>
+
+    <div class="section" id="s1">
+      <h2><span class="num">1</span> Informações que coletamos</h2>
+      <p>O PageTurn <strong>não coleta nenhuma informação pessoal</strong> dos usuários. O aplicativo não requer criação de conta, não solicita e-mail, nome, localização ou qualquer outro dado identificável.</p>
+      <p>O aplicativo funciona completamente de forma local, sem qualquer comunicação com servidores externos.</p>
+    </div>
+
+    <div class="section" id="s2">
+      <h2><span class="num">2</span> Armazenamento de dados</h2>
+      <p>Todos os dados gerados pelo uso do aplicativo — incluindo sua biblioteca de livros, progresso de leitura, configurações e preferências — são armazenados <strong>exclusivamente no armazenamento local do seu dispositivo Android</strong>.</p>
+      <p>Esses dados nunca saem do seu celular e não são enviados para nenhum servidor, nuvem ou serviço externo.</p>
+    </div>
+
+    <div class="section" id="s3">
+      <h2><span class="num">3</span> Arquivos do usuário</h2>
+      <p>Os arquivos importados pelo usuário (PDFs, CBRs, CBZs e outros formatos suportados) são copiados para o armazenamento interno do aplicativo para facilitar o acesso.</p>
+      <p>Esses arquivos <strong>nunca são enviados para a internet</strong>, não são acessados por terceiros e permanecem sob controle exclusivo do usuário. Ao desinstalar o aplicativo, todos os dados são removidos do dispositivo.</p>
+    </div>
+
+    <div class="section" id="s4">
+      <h2><span class="num">4</span> Permissões utilizadas</h2>
+      <p>O PageTurn solicita as seguintes permissões do Android:</p>
+      <p><strong>Leitura de armazenamento</strong> — utilizada exclusivamente para permitir que o usuário selecione e importe seus próprios arquivos de leitura (PDF, CBR, CBZ). Esta permissão não é usada para acessar outros arquivos do dispositivo.</p>
+    </div>
+
+    <div class="section" id="s5">
+      <h2><span class="num">5</span> Serviços de terceiros</h2>
+      <p>O PageTurn <strong>não utiliza</strong> serviços de análise, publicidade, rastreamento, relatórios de erro ou qualquer outro serviço de terceiros que possa coletar dados dos usuários.</p>
+      <p>O aplicativo não exibe anúncios e não possui integrações com redes de publicidade.</p>
+    </div>
+
+    <div class="section" id="s6">
+      <h2><span class="num">6</span> Segurança</h2>
+      <p>Como nenhum dado é transmitido pela internet, o risco de interceptação de dados é inexistente. Seus arquivos e progresso de leitura são protegidos pelo sistema de segurança padrão do Android.</p>
+    </div>
+
+    <div class="section" id="s7">
+      <h2><span class="num">7</span> Crianças</h2>
+      <p>O PageTurn não coleta dados de nenhum usuário, incluindo crianças menores de 13 anos. O aplicativo é seguro para uso por todas as idades, desde que o conteúdo importado seja apropriado para o usuário.</p>
+    </div>
+
+    <div class="section" id="s8">
+      <h2><span class="num">8</span> Contato</h2>
+      <p>Para dúvidas, sugestões ou solicitações relacionadas a esta política de privacidade, entre em contato:</p>
+      <p><strong>E-mail:</strong> [SEU EMAIL AQUI]</p>
+    </div>
+
+    <div class="section" id="s9">
+      <h2><span class="num">9</span> Alterações nesta política</h2>
+      <p>Eventuais alterações nesta Política de Privacidade serão publicadas nesta página com a data de atualização revisada. Recomendamos revisitar esta página periodicamente.</p>
+      <p>O uso continuado do aplicativo após quaisquer alterações constitui aceitação da política atualizada.</p>
+    </div>
+  </div>
+
+  <footer>
+    <a href="/" class="footer-logo">Page<span>Turn</span></a>
+    <div class="footer-copy">© 2026 PageTurn. Todos os direitos reservados.</div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PageTurn — Sua biblioteca pessoal</title>
+  <meta name="description" content="PageTurn é o leitor pessoal para livros digitais e HQs. Leia PDFs e gibis com estilo, totalmente offline.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg0: #0D0D0D;
+      --bg1: #141414;
+      --bg2: #1C1C1E;
+      --bg3: #252527;
+      --accent: #E8423A;
+      --accent-soft: #ff6b63;
+      --text: #F2F2F2;
+      --text2: #9A9A9A;
+      --text3: #555558;
+      --blue: #5B8DEF;
+      --green: #4CAF87;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg0);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(13,13,13,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 120px 40px 80px;
+      overflow: hidden;
+    }
+
+    /* Glow de fundo */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(232,66,58,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(232,66,58,0.1);
+      border: 1px solid rgba(232,66,58,0.25);
+      color: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(48px, 6vw, 80px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text2);
+      line-height: 1.7;
+      max-width: 440px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.2s;
+      box-shadow: 0 8px 30px rgba(232,66,58,0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-soft);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(232,66,58,0.4);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg2);
+      color: var(--text);
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid var(--bg3);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg3);
+      transform: translateY(-2px);
+    }
+
+    /* ── PHONE MOCKUP ── */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .phone-wrap {
+      position: relative;
+    }
+
+    .phone-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse, rgba(232,66,58,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.7; }
+    }
+
+    .phone {
+      width: 260px;
+      background: var(--bg1);
+      border-radius: 36px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone-screen {
+      background: var(--bg1);
+      border-radius: 26px;
+      overflow: hidden;
+      aspect-ratio: 9/19;
+    }
+
+    .phone-ui {
+      padding: 16px 14px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .phone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .phone-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .phone-sub {
+      font-size: 9px;
+      color: var(--text3);
+      margin-top: 1px;
+    }
+
+    .phone-icons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .phone-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--bg2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-stats {
+      display: flex;
+      gap: 6px;
+    }
+
+    .stat-pill {
+      background: var(--bg2);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 8px;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-pill .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+
+    .phone-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+
+    .phone-books {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .phone-book {
+      border-radius: 6px;
+      aspect-ratio: 2/3;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-book-spine {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 6px 0 0 6px;
+    }
+
+    .phone-book-title {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 4px 3px 3px;
+      font-size: 6px;
+      color: white;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      line-height: 1.2;
+    }
+
+    .phone-continue {
+      background: var(--bg2);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .phone-continue-book {
+      width: 30px;
+      height: 40px;
+      border-radius: 4px;
+      background: var(--bg3);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-continue-info {
+      flex: 1;
+    }
+
+    .phone-continue-name {
+      font-size: 8px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .phone-progress-bar {
+      height: 2px;
+      background: var(--bg3);
+      border-radius: 1px;
+      margin-top: 5px;
+    }
+
+    .phone-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .phone-percent {
+      font-size: 7px;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+
+    .phone-fab {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-end;
+      margin-top: auto;
+      box-shadow: 0 4px 12px rgba(232,66,58,0.4);
+    }
+
+    /* Floating cards */
+    .float-card {
+      position: absolute;
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 12px 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 2;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .float-card:nth-child(2) { animation-delay: -2s; }
+    .float-card:nth-child(3) { animation-delay: -4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .float-card-1 {
+      top: 10%;
+      right: -20px;
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .float-card-1 strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .float-card-2 {
+      bottom: 15%;
+      left: -30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .float-card-2 .icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(76,175,135,0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .float-card-2 .info {
+      font-size: 11px;
+    }
+
+    .float-card-2 .info strong {
+      display: block;
+      color: var(--green);
+      font-size: 13px;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 120px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-center {
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 80px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    h2 em { font-style: italic; color: var(--accent); }
+
+    .section-desc {
+      color: var(--text2);
+      font-size: 16px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .features-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--bg2);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .feature-card {
+      background: var(--bg1);
+      padding: 40px 36px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232,66,58,0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover { background: var(--bg2); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* ── FORMATS ── */
+    .formats {
+      padding: 80px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .formats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--bg1);
+      border-radius: 32px;
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+
+    .formats-text {
+      padding: 60px;
+    }
+
+    .formats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 60px;
+      background: var(--bg2);
+    }
+
+    .format-item {
+      background: var(--bg1);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .format-item:hover {
+      border-color: rgba(232,66,58,0.3);
+      transform: translateY(-2px);
+    }
+
+    .format-ext {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .format-name {
+      font-size: 11px;
+      color: var(--text3);
+      font-weight: 400;
+    }
+
+    /* ── OFFLINE ── */
+    .offline-section {
+      padding: 80px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .offline-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, var(--bg1) 0%, rgba(232,66,58,0.05) 100%);
+      border-radius: 32px;
+      border: 1px solid rgba(232,66,58,0.1);
+      padding: 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .offline-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(232,66,58,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .offline-inner h2 { margin-bottom: 16px; }
+    .offline-inner .section-desc { max-width: 500px; margin: 0 auto 40px; }
+
+    /* ── DOWNLOAD ── */
+    .download {
+      padding: 120px 40px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .download h2 { margin-bottom: 16px; }
+    .download .section-desc { max-width: 440px; margin: 0 auto 48px; }
+
+    .download-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-store {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg2);
+      color: var(--text);
+      text-decoration: none;
+      padding: 16px 28px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.25s;
+    }
+
+    .btn-store:hover {
+      background: var(--bg3);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    }
+
+    .btn-store .store-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .btn-store .store-label { font-size: 10px; color: var(--text3); }
+    .btn-store .store-name { font-size: 15px; font-weight: 600; color: var(--text); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .footer-logo span { color: var(--accent); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text2); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 60px; }
+      .hero-content { grid-template-columns: 1fr; gap: 60px; }
+      .hero-visual { order: -1; }
+      .phone { width: 220px; }
+      .float-card { display: none; }
+      .features { padding: 80px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .formats-inner { grid-template-columns: 1fr; }
+      .formats-text, .formats-grid { padding: 40px 32px; }
+      .offline-inner { padding: 48px 32px; }
+      .download { padding: 80px 24px; }
+      footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">Page<span>Turn</span></a>
+    <ul class="nav-links">
+      <li><a href="#funcionalidades">Funcionalidades</a></li>
+      <li><a href="#formatos">Formatos</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="privacy.html">Privacidade</a></li>
+    </ul>
+    <a href="#download" class="btn-primary" style="padding:10px 20px;font-size:13px;">
+      Baixar grátis
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-tag">Disponível para Android</div>
+        <h1>Sua biblioteca.<br><em>Do seu jeito.</em></h1>
+        <p class="hero-sub">
+          PageTurn é o leitor pessoal para livros digitais e histórias em quadrinhos. 
+          Organizado, bonito e 100% offline — sua coleção sempre com você.
+        </p>
+        <div class="hero-cta">
+          <a href="#download" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Baixar grátis
+          </a>
+          <a href="#funcionalidades" class="btn-secondary">
+            Ver funcionalidades
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Phone mockup -->
+      <div class="hero-visual">
+        <div class="phone-wrap">
+          <div class="phone-glow"></div>
+
+          <!-- Float card 1 -->
+          <div class="float-card float-card-1">
+            <strong>261</strong>
+            páginas hoje
+          </div>
+
+          <!-- Float card 2 -->
+          <div class="float-card float-card-2">
+            <div class="icon">📖</div>
+            <div class="info">
+              <strong>Lendo agora</strong>
+              Tio Patinhas 001
+            </div>
+          </div>
+
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-ui">
+
+                <!-- Header -->
+                <div class="phone-header">
+                  <div>
+                    <div class="phone-title">PageTurn</div>
+                    <div class="phone-sub">Sua biblioteca pessoal</div>
+                  </div>
+                  <div class="phone-icons">
+                    <div class="phone-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9A9A9A" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    </div>
+                    <div class="phone-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9A9A9A" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="phone-stats">
+                  <div class="stat-pill"><span class="dot" style="background:#fff;opacity:.5"></span>5 Total</div>
+                  <div class="stat-pill"><span class="dot" style="background:#4CAF87"></span>2 Lendo</div>
+                  <div class="stat-pill"><span class="dot" style="background:#5B8DEF"></span>1 Concluído</div>
+                </div>
+
+                <!-- Continue reading -->
+                <div>
+                  <div class="phone-section-title" style="margin-bottom:6px">Continuar lendo</div>
+                  <div class="phone-continue">
+                    <div class="phone-continue-book" style="background:linear-gradient(135deg,#1a3a4a,#0d2030)">
+                      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:#E8423A;border-radius:4px 0 0 4px"></div>
+                    </div>
+                    <div class="phone-continue-info">
+                      <div class="phone-continue-name">Tio Patinhas 001</div>
+                      <div class="phone-progress-bar">
+                        <div class="phone-progress-fill" style="width:26%"></div>
+                      </div>
+                      <div class="phone-percent">26%</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Library -->
+                <div>
+                  <div class="phone-section-title" style="margin-bottom:6px">Sua biblioteca</div>
+                  <div class="phone-books">
+                    <div class="phone-book" style="background:linear-gradient(135deg,#2a1a3a,#1a0d2a)">
+                      <div class="phone-book-spine" style="background:#E8423A"></div>
+                      <div class="phone-book-title">Pato Donald</div>
+                    </div>
+                    <div class="phone-book" style="background:linear-gradient(135deg,#1a3a2a,#0d2018)">
+                      <div class="phone-book-spine" style="background:#4CAF87"></div>
+                      <div class="phone-book-title">Tio Patinhas</div>
+                    </div>
+                    <div class="phone-book" style="background:linear-gradient(135deg,#1a2a3a,#0d1820)">
+                      <div class="phone-book-spine" style="background:#5B8DEF"></div>
+                      <div class="phone-book-title">Baú Disney</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- FAB -->
+                <div class="phone-fab">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="funcionalidades">
+    <div class="section-center reveal">
+      <div class="section-tag">Funcionalidades</div>
+      <h2>Feito para quem <em>lê de verdade</em></h2>
+      <p class="section-desc">Cada detalhe pensado para quem tem uma coleção real e quer gerenciá-la com prazer.</p>
+    </div>
+
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(232,66,58,0.1)">📚</div>
+        <div class="feature-title">Capas reais</div>
+        <div class="feature-desc">Geradas automaticamente da primeira página de cada arquivo. Sua biblioteca parece uma prateleira de verdade.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(76,175,135,0.1)">📍</div>
+        <div class="feature-title">Progresso salvo</div>
+        <div class="feature-desc">Retome exatamente onde parou, com percentual de leitura e histórico de páginas lidas.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(91,141,239,0.1)">🔍</div>
+        <div class="feature-title">Zoom por pinça</div>
+        <div class="feature-desc">Aproxime e afaste as páginas naturalmente. Ideal para HQs com detalhes ou letras pequenas.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(232,66,58,0.1)">🌙</div>
+        <div class="feature-title">Design escuro</div>
+        <div class="feature-desc">Interface dark elegante que descansa os olhos durante longas sessões de leitura.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(76,175,135,0.1)">📱</div>
+        <div class="feature-title">Modo paisagem</div>
+        <div class="feature-desc">Rotacione para ler páginas duplas de HQs — exatamente como na vida real.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(91,141,239,0.1)">⚡</div>
+        <div class="feature-title">100% offline</div>
+        <div class="feature-desc">Seus arquivos, seu celular, sem internet. Nenhum dado enviado para nenhum servidor.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMATS -->
+  <section class="formats" id="formatos">
+    <div class="formats-inner reveal">
+      <div class="formats-text">
+        <div class="section-tag">Formatos suportados</div>
+        <h2>Lê tudo que <em>importa</em></h2>
+        <p class="section-desc" style="margin-top:16px">
+          Os formatos mais usados para livros digitais e quadrinhos, todos suportados nativamente — sem conversão, sem complicação.
+        </p>
+      </div>
+      <div class="formats-grid">
+        <div class="format-item">
+          <div class="format-ext" style="color:var(--accent)">PDF</div>
+          <div class="format-name">Livros e documentos</div>
+        </div>
+        <div class="format-item">
+          <div class="format-ext" style="color:var(--blue)">CBR</div>
+          <div class="format-name">HQs e gibis (RAR)</div>
+        </div>
+        <div class="format-item">
+          <div class="format-ext" style="color:var(--green)">CBZ</div>
+          <div class="format-name">HQs e gibis (ZIP)</div>
+        </div>
+        <div class="format-item" style="opacity:0.4">
+          <div class="format-ext" style="color:var(--text2)">EPUB</div>
+          <div class="format-name">Em breve</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFLINE -->
+  <section class="offline-section">
+    <div class="offline-inner reveal">
+      <div class="section-tag">Privacidade primeiro</div>
+      <h2>Seus livros são <em>seus</em></h2>
+      <p class="section-desc">
+        PageTurn não coleta dados, não precisa de login, não envia nada para a nuvem. 
+        Seus arquivos ficam no seu celular. Ponto.
+      </p>
+      <a href="privacy.html" class="btn-secondary">Ver política de privacidade →</a>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="download" id="download">
+    <div class="section-tag reveal">Download</div>
+    <h2 class="reveal">Comece a ler <em>agora</em></h2>
+    <p class="section-desc reveal">Gratuito. Sem anúncios. Sem assinatura.</p>
+    <div class="download-btns reveal">
+      <a href="#" class="btn-store">
+        <div class="store-icon">▶</div>
+        <div>
+          <div class="store-label">Disponível no</div>
+          <div class="store-name">Google Play</div>
+        </div>
+      </a>
+      <a href="#" class="btn-store">
+        <div class="store-icon">⬇</div>
+        <div>
+          <div class="store-label">Baixar direto</div>
+          <div class="store-name">APK Android</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="/" class="footer-logo">Page<span>Turn</span></a>
+    <ul class="footer-links">
+      <li><a href="#funcionalidades">Funcionalidades</a></li>
+      <li><a href="#formatos">Formatos</a></li>
+      <li><a href="privacy.html">Privacidade</a></li>
+    </ul>
+    <div class="footer-copy">© 2026 PageTurn. Feito com ❤️</div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
